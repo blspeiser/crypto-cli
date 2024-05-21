@@ -165,8 +165,7 @@ public class CryptoCLI {
     if(arguments.input  == null) error(parser, "Must specify the input");
     if(arguments.output == null) error(parser, "Must specify the output");
     if(arguments.key    == null) error(parser, "Must specify the secret key");
-    if(arguments.symmetric 
-    && (arguments.initializationVector == null || arguments.initializationVector.isBlank())) {
+    if(arguments.initializationVector == null || arguments.initializationVector.isBlank()) {
       error(parser, "Must specify the initialization vector");
     }
   }
