@@ -71,7 +71,7 @@ public class CryptoCLI {
   throws NoSuchAlgorithmException, IOException {
     if(arguments.asymmetric) {
       if(arguments.publicKey == null) {
-        error(parser, "Must specify thinpute output file for the public key");
+        error(parser, "Must specify the output file for the public key");
       }
       if(arguments.privateKey == null) {
         error(parser, "Must specify the output file for the private key");
