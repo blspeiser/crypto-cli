@@ -23,7 +23,9 @@ import io.cambium.crypto.service.impl.AsymmetricCryptoService;
 import io.cambium.crypto.service.impl.SymmetricCryptoService;
 
 public class CryptoCLI {
+  //These two flags are to make it easier to properly run tests. 
   public static boolean throwReturnCode = false;
+  public static boolean suppressOutput = false;
 
   public static void main(String... args) {
     int returnCode = 0; 
@@ -32,7 +34,8 @@ public class CryptoCLI {
       JCommander parser = JCommander.newBuilder()
           .addObject(arguments)
           .build();
-      parser.parse(args);
+      parser.setProgramName("crypto-cli");
+      if(null != args) parser.parse(args);
       if(arguments.generateKeys && !arguments.encrypt && !arguments.decrypt && !arguments.help) {
         generateKeys(parser, arguments);
       } else
@@ -43,8 +46,8 @@ public class CryptoCLI {
         decrypt(parser, arguments);
       } 
       else {
-        parser.usage();
-        returnCode = 1;
+        if(!suppressOutput) parser.usage(); //specifically optionally suppress this output only, just for tests
+        returnCode = arguments.help ? 0 : 1; //if the user specifically asked for help, then this case is not an error
       }
     } catch(ParameterException e) {
       System.err.println(e.getMessage());

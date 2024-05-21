@@ -7,7 +7,7 @@ import com.beust.jcommander.converters.FileConverter;
 
 public class Arguments {
   
-  @Parameter(names = "--help", help=true, 
+  @Parameter(names = {"-h", "-?", "--help"}, help=true, 
       description="Display system usage")
   public boolean help = false;
   

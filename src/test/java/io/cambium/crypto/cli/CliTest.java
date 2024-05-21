@@ -1,6 +1,7 @@
 package io.cambium.crypto.cli;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,16 +16,15 @@ public class CliTest {
   public void testSymmetric() throws IOException {
     CryptoCLI.throwReturnCode = true;
     
-    String[] args1 = {"-g", "-s", "-o", "./target/secret.key" };
-    CryptoCLI.main(args1);
+    CryptoCLI.main("-g", "-s", "-o", "./target/secret.key");
     
-    String[] args2 = {"-e", "-s", "-k", "./target/secret.key", "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71", 
-                      "-i", "./pom.xml", "-o", "./target/encrypted.bin" };
-    CryptoCLI.main(args2);
+    CryptoCLI.main("-e", "-s", "-k", "./target/secret.key", 
+        "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71", 
+        "-i", "./pom.xml", "-o", "./target/encrypted.bin");
     
-    String[] args3 = {"-d", "-s", "-k", "./target/secret.key", "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71", 
-                      "-i", "./target/encrypted.bin", "-o", "./target/decrypted.xml" };
-    CryptoCLI.main(args3);
+    CryptoCLI.main("-d", "-s", "-k", "./target/secret.key", 
+        "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71", 
+        "-i", "./target/encrypted.bin", "-o", "./target/decrypted.xml");
     
     byte[] i = Files.readAllBytes(Paths.get("./pom.xml"));
     byte[] o = Files.readAllBytes(Paths.get("./target/decrypted.xml"));
@@ -35,22 +35,32 @@ public class CliTest {
   public void testAsymmetric() throws IOException {
     CryptoCLI.throwReturnCode = true;
     
-    String[] args1 = {"-g", "-a", "-pub", "./target/public.key", "-priv", "./target/private.key" };
-    CryptoCLI.main(args1);
+    CryptoCLI.main("-g", "-a", "-pub", "./target/public.key", "-priv", "./target/private.key");
     
-    String[] args2 = {"-e", "-a", "-k", "./target/encrypted.key", "-pub", "./target/public.key",   
-                      "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71",
-                      "-i", "./pom.xml", "-o", "./target/encrypted.bin" };
-    CryptoCLI.main(args2);
+    CryptoCLI.main("-e", "-a", "-k", "./target/encrypted.key", "-pub", "./target/public.key",   
+        "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71",
+        "-i", "./pom.xml", "-o", "./target/encrypted.bin");
     
-    String[] args3 = {"-d", "-a", "-k", "./target/encrypted.key", "-priv", "./target/private.key", 
-                      "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71",
-                      "-i", "./target/encrypted.bin", "-o", "./target/decrypted.xml" };
-    CryptoCLI.main(args3);
+    CryptoCLI.main("-d", "-a", "-k", "./target/encrypted.key", "-priv", "./target/private.key", 
+        "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71",
+        "-i", "./target/encrypted.bin", "-o", "./target/decrypted.xml");
     
     byte[] i = Files.readAllBytes(Paths.get("./pom.xml"));
     byte[] o = Files.readAllBytes(Paths.get("./target/decrypted.xml"));
     assertTrue(Arrays.equals(i, o));
   }
 
+  @Test
+  public void testHelp() throws IOException {
+    CryptoCLI.throwReturnCode = true;
+    CryptoCLI.suppressOutput = true;
+    try {
+      CryptoCLI.main((String[])null);
+      fail("did not throw return code");
+    } catch(Exception e) {
+      //expected
+    }
+    CryptoCLI.main("--help");
+  }
+  
 }

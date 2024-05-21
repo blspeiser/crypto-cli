@@ -56,9 +56,8 @@ public class SymmetricCryptoService implements CryptoService {
       throw new UncheckedIOException(e);
     }
   }
-
-  //deliberately package scope 
-  void validate(CryptoParameters params) {
+ 
+  private void validate(CryptoParameters params) {
     if(null == params.secretKey || params.secretKey.length == 0) {
       throw new IllegalArgumentException("Empty secret key");
     }
