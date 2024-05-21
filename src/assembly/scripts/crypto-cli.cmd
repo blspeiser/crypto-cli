@@ -1,0 +1,1 @@
+java -jar crypto-cli.jar %*
