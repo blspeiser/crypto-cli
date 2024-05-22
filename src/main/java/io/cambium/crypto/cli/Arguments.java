@@ -7,7 +7,7 @@ import com.beust.jcommander.converters.FileConverter;
 
 public class Arguments {
   
-  @Parameter(names = {"-h", "-?", "--help"}, help=true, 
+  @Parameter(names = {"-?", "--help"}, help=true, 
       description="Display system usage")
   public boolean help = false;
   
@@ -23,6 +23,10 @@ public class Arguments {
       description="Generate keys for encryption/decryption")
   public boolean generateKeys = false;
   
+  @Parameter(names={"-h", "--hash"}, 
+      description="Generate hash")
+  public boolean generateHash = false;
+  
   @Parameter(names={"-s", "--symmetric"}, 
       description="When generating keys, produce a symmetric secret key")
   public boolean symmetric = false;
@@ -37,7 +41,7 @@ public class Arguments {
   public String password = null;
   
   @Parameter(names={"-x", "--salt"}, 
-      description="When generating symmetric keys from a password, optionally specify the salt")
+      description="Specify the salt for generating keys or hashes")
   public String salt = null;
   
   @Parameter(names={"-k", "--key"}, 
@@ -69,5 +73,13 @@ public class Arguments {
       description="The file for the private key",
       converter=FileConverter.class)
   public File privateKey = null;
+  
+  @Parameter(names={"-md5"}, 
+      description="Hash using MD5")
+  public boolean md5 = false;
+  
+  @Parameter(names={"-sha256"}, 
+      description="Hash using SHA-256")
+  public boolean sha256 = false;
   
 }

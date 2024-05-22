@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.KeyPair;
@@ -19,7 +21,10 @@ import com.beust.jcommander.ParameterException;
 import io.cambium.crypto.keys.KeyService;
 import io.cambium.crypto.service.CryptoParameters;
 import io.cambium.crypto.service.CryptoService;
+import io.cambium.crypto.service.Hash;
 import io.cambium.crypto.service.impl.AsymmetricCryptoService;
+import io.cambium.crypto.service.impl.Md5HashService;
+import io.cambium.crypto.service.impl.Sha256HashService;
 import io.cambium.crypto.service.impl.SymmetricCryptoService;
 
 public class CryptoCLI {
@@ -36,14 +41,34 @@ public class CryptoCLI {
           .build();
       parser.setProgramName("crypto-cli");
       if(null != args) parser.parse(args);
-      if(arguments.generateKeys && !arguments.encrypt && !arguments.decrypt && !arguments.help) {
+      if(arguments.generateKeys 
+      && !arguments.encrypt 
+      && !arguments.decrypt
+      && !arguments.generateHash
+      && !arguments.help) 
+      {
         generateKeys(parser, arguments);
       } else
-      if(arguments.encrypt && !arguments.decrypt && !arguments.generateKeys && !arguments.help) {
+      if(arguments.encrypt 
+      && !arguments.decrypt 
+      && !arguments.generateKeys 
+      && !arguments.generateHash
+      && !arguments.help) {
         encrypt(parser, arguments);
       } else  
-      if(arguments.decrypt && !arguments.encrypt && !arguments.generateKeys && !arguments.help) {
+      if(arguments.decrypt 
+      && !arguments.encrypt 
+      && !arguments.generateKeys 
+      && !arguments.generateHash
+      && !arguments.help) {
         decrypt(parser, arguments);
+      } else
+      if(arguments.generateHash 
+      && !arguments.encrypt 
+      && !arguments.decrypt 
+      && !arguments.generateKeys
+      && !arguments.help) {
+        generateHash(parser, arguments);
       } 
       else {
         if(!suppressOutput) parser.usage(); //specifically optionally suppress this output only, just for tests
@@ -64,6 +89,32 @@ public class CryptoCLI {
       if(returnCode != 0) throw new RuntimeException(Integer.toString(returnCode));
     } else {
       System.exit(returnCode);
+    }
+  }
+
+  private static void generateHash(JCommander parser, Arguments arguments) throws IOException {
+    if(arguments.input  == null) error(parser, "Must specify the input");
+    Hash result = null;
+    if(arguments.md5) { 
+      InputStream is = new BufferedInputStream(new FileInputStream(arguments.input));  
+      result = new Md5HashService().hash(is);
+    } else
+    if(arguments.sha256) {
+      InputStream is = new BufferedInputStream(new FileInputStream(arguments.input));
+      byte[] salt = (null == arguments.salt || arguments.salt.isBlank())
+          ? null
+          : arguments.salt.getBytes(StandardCharsets.UTF_8);
+      result = new Sha256HashService().hash(salt, is);
+    } 
+    else {
+      error(parser, "Must specify type of hash");  //no fall-through, this throws an exception
+    }
+    if(arguments.output == null) {
+      //The default encoding for Unix-based md5sum and sha256sum is hex output, so use that:
+      String hash = HexFormat.of().formatHex(result.hash);
+      System.out.println(hash);
+    } else {
+      Files.write(arguments.output.toPath(), result.hash, StandardOpenOption.CREATE);
     }
   }
 
