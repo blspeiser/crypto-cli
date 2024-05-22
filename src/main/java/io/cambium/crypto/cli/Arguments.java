@@ -27,6 +27,10 @@ public class Arguments {
       description="Generate hash")
   public boolean generateHash = false;
   
+  @Parameter(names={"-b", "--bytes", "--hex"}, 
+      description="Generate hex bytestring")
+  public boolean generateBytes = false;
+  
   @Parameter(names={"-s", "--symmetric"}, 
       description="When generating keys, produce a symmetric secret key")
   public boolean symmetric = false;
@@ -81,5 +85,9 @@ public class Arguments {
   @Parameter(names={"-sha256"}, 
       description="Hash using SHA-256")
   public boolean sha256 = false;
+  
+  @Parameter(names={"-n", "--byte-count"},
+      description="Number of bytes to generate in a bytestring")
+  public Integer numberOfBytes = 16;
   
 }

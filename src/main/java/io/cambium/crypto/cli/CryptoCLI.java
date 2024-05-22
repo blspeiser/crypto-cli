@@ -45,6 +45,7 @@ public class CryptoCLI {
       && !arguments.encrypt 
       && !arguments.decrypt
       && !arguments.generateHash
+      && !arguments.generateBytes
       && !arguments.help) 
       {
         generateKeys(parser, arguments);
@@ -53,6 +54,7 @@ public class CryptoCLI {
       && !arguments.decrypt 
       && !arguments.generateKeys 
       && !arguments.generateHash
+      && !arguments.generateBytes
       && !arguments.help) {
         encrypt(parser, arguments);
       } else  
@@ -60,6 +62,7 @@ public class CryptoCLI {
       && !arguments.encrypt 
       && !arguments.generateKeys 
       && !arguments.generateHash
+      && !arguments.generateBytes
       && !arguments.help) {
         decrypt(parser, arguments);
       } else
@@ -67,8 +70,17 @@ public class CryptoCLI {
       && !arguments.encrypt 
       && !arguments.decrypt 
       && !arguments.generateKeys
+      && !arguments.generateBytes
       && !arguments.help) {
         generateHash(parser, arguments);
+      } else
+      if(arguments.generateBytes
+      && !arguments.encrypt 
+      && !arguments.decrypt 
+      && !arguments.generateKeys
+      && !arguments.generateHash
+      && !arguments.help) {
+        generateBytes(parser, arguments);
       } 
       else {
         if(!suppressOutput) parser.usage(); //specifically optionally suppress this output only, just for tests
@@ -92,6 +104,16 @@ public class CryptoCLI {
     }
   }
 
+  private static void generateBytes(JCommander parser, Arguments arguments) throws NoSuchAlgorithmException {
+    if(arguments.numberOfBytes == null) arguments.numberOfBytes = 16;
+    if(arguments.numberOfBytes < 1) error(parser, "Invalid number of bytes");
+    byte[] bytes = new byte[arguments.numberOfBytes];
+    SecureRandom.getInstanceStrong().nextBytes(bytes);
+    if(!suppressOutput) {
+      System.out.println(HexFormat.of().formatHex(bytes));
+    }
+  }
+
   private static void generateHash(JCommander parser, Arguments arguments) throws IOException {
     if(arguments.input  == null) error(parser, "Must specify the input");
     Hash result = null;
@@ -112,7 +134,9 @@ public class CryptoCLI {
     if(arguments.output == null) {
       //The default encoding for Unix-based md5sum and sha256sum is hex output, so use that:
       String hash = HexFormat.of().formatHex(result.hash);
-      System.out.println(hash);
+      if(!suppressOutput) {
+        System.out.println(hash);
+      }
     } else {
       Files.write(arguments.output.toPath(), result.hash, StandardOpenOption.CREATE);
     }
@@ -146,7 +170,7 @@ public class CryptoCLI {
         if(salt == null || salt.isBlank()) {
           byte[] temp = new byte[256];
           SecureRandom.getInstanceStrong().nextBytes(temp);
-          salt = HexFormat.of().withUpperCase().formatHex(temp);
+          salt = HexFormat.of().formatHex(temp);
         } 
         key = KeyService.generateSecretKey(arguments.password, salt).getEncoded();
       }
@@ -162,8 +186,8 @@ public class CryptoCLI {
     CryptoParameters params = new CryptoParameters();
     params.input  = new BufferedInputStream(  new FileInputStream(arguments.input)   );
     params.output = new BufferedOutputStream( new FileOutputStream(arguments.output) );
-    params.initializationVector = HexFormat.of().withUpperCase().parseHex(
-        arguments.initializationVector.toUpperCase());
+    params.initializationVector = HexFormat.of().parseHex(
+        arguments.initializationVector.toLowerCase());
     CryptoService service = null;
     if(arguments.symmetric) {
       params.secretKey = Files.readAllBytes(arguments.key.toPath());

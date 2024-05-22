@@ -15,6 +15,7 @@ public class CliTest {
   @Test
   public void testSymmetric() throws IOException {
     CryptoCLI.throwReturnCode = true;
+    CryptoCLI.suppressOutput = true;
     
     CryptoCLI.main("-g", "-s", "-o", "./target/secret.key");
     
@@ -34,6 +35,7 @@ public class CliTest {
   @Test
   public void testAsymmetric() throws IOException {
     CryptoCLI.throwReturnCode = true;
+    CryptoCLI.suppressOutput = true;
     
     CryptoCLI.main("-g", "-a", "-pub", "./target/public.key", "-priv", "./target/private.key");
     
@@ -53,6 +55,7 @@ public class CliTest {
   @Test
   public void testMD5() throws IOException {
     CryptoCLI.throwReturnCode = true;
+    CryptoCLI.suppressOutput = true;
     CryptoCLI.main("-h", "-md5", "-i", "./pom.xml");
     CryptoCLI.main("-h", "-md5", "-i", "./pom.xml", "-o", "./target/md5.bin");
   }
@@ -60,11 +63,20 @@ public class CliTest {
   @Test
   public void testSHA256() throws IOException {
     CryptoCLI.throwReturnCode = true;
+    CryptoCLI.suppressOutput = true;
     CryptoCLI.main("-h", "-sha256", "-i", "./pom.xml");
     CryptoCLI.main("-h", "-sha256", "--salt", "A1BF39D2FFE6123A90BCD9225F6B2A71", "-i", "./pom.xml");
     CryptoCLI.main("-h", "-sha256", "--salt", "A1BF39D2FFE6123A90BCD9225F6B2A71", "-i", "./pom.xml", "-o", "./target/sha256.bin");
   }
 
+  @Test
+  public void testBytes() {
+    CryptoCLI.throwReturnCode = true;
+    CryptoCLI.suppressOutput = true;
+    CryptoCLI.main("-b");
+    CryptoCLI.main("-b", "-n", "64");
+  }
+  
   @Test
   public void testHelp() throws IOException {
     CryptoCLI.throwReturnCode = true;
