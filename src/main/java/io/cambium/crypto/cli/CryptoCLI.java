@@ -21,12 +21,13 @@ import com.beust.jcommander.ParameterException;
 import io.cambium.crypto.keys.KeyService;
 import io.cambium.crypto.service.CryptoParameters;
 import io.cambium.crypto.service.CryptoService;
-import io.cambium.crypto.service.Hash;
+import io.cambium.crypto.service.HashService;
 import io.cambium.crypto.service.impl.AsymmetricCryptoService;
 import io.cambium.crypto.service.impl.Md5HashService;
 import io.cambium.crypto.service.impl.Sha256HashService;
 import io.cambium.crypto.service.impl.SymmetricCryptoService;
 
+//TODO Refactor to use JCommander commands. 
 public class CryptoCLI {
   //These two flags are to make it easier to properly run tests. 
   public static boolean throwReturnCode = false;
@@ -116,29 +117,29 @@ public class CryptoCLI {
 
   private static void generateHash(JCommander parser, Arguments arguments) throws IOException {
     if(arguments.input  == null) error(parser, "Must specify the input");
-    Hash result = null;
+    InputStream is = new BufferedInputStream(new FileInputStream(arguments.input));
+    byte[] salt = (null == arguments.salt || arguments.salt.isBlank())
+        ? null
+        : arguments.salt.getBytes(StandardCharsets.UTF_8);
+    HashService service = null;
     if(arguments.md5) { 
-      InputStream is = new BufferedInputStream(new FileInputStream(arguments.input));  
-      result = new Md5HashService().hash(is);
+      service = new Md5HashService();
     } else
     if(arguments.sha256) {
-      InputStream is = new BufferedInputStream(new FileInputStream(arguments.input));
-      byte[] salt = (null == arguments.salt || arguments.salt.isBlank())
-          ? null
-          : arguments.salt.getBytes(StandardCharsets.UTF_8);
-      result = new Sha256HashService().hash(salt, is);
+      service = new Sha256HashService();
     } 
     else {
       error(parser, "Must specify type of hash");  //no fall-through, this throws an exception
     }
+    byte[] hash = service.hash(salt, is);
     if(arguments.output == null) {
       //The default encoding for Unix-based md5sum and sha256sum is hex output, so use that:
-      String hash = HexFormat.of().formatHex(result.hash);
+      String hex = HexFormat.of().formatHex(hash);
       if(!suppressOutput) {
-        System.out.println(hash);
+        System.out.println(hex);
       }
     } else {
-      Files.write(arguments.output.toPath(), result.hash, StandardOpenOption.CREATE);
+      Files.write(arguments.output.toPath(), hash, StandardOpenOption.CREATE);
     }
   }
 
