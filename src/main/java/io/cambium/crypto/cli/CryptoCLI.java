@@ -2,7 +2,6 @@ package io.cambium.crypto.cli;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,51 +37,37 @@ public class CryptoCLI {
     int returnCode = 0; 
     try {  
       Arguments arguments = new Arguments();
+      KeysCommand keysCommand = new KeysCommand();
+      HashCommand hashCommand = new HashCommand();
+      BytesCommand bytesCommand = new BytesCommand();
+      EncryptCommand encryptCommand = new EncryptCommand();
+      DecryptCommand decryptCommand = new DecryptCommand();
+      
       JCommander parser = JCommander.newBuilder()
           .addObject(arguments)
+          .addCommand(keysCommand)
+          .addCommand(hashCommand)
+          .addCommand(bytesCommand)
+          .addCommand(encryptCommand)
+          .addCommand(decryptCommand)
           .build();
       parser.setProgramName("crypto-cli");
       if(null != args) parser.parse(args);
-      if(arguments.generateKeys 
-      && !arguments.encrypt 
-      && !arguments.decrypt
-      && !arguments.generateHash
-      && !arguments.generateBytes
-      && !arguments.help) 
-      {
-        generateKeys(parser, arguments);
+      String command = parser.getParsedCommand();
+      if(KeysCommand.NAME.equals(command)) {
+        generateKeys(parser, keysCommand);
       } else
-      if(arguments.encrypt 
-      && !arguments.decrypt 
-      && !arguments.generateKeys 
-      && !arguments.generateHash
-      && !arguments.generateBytes
-      && !arguments.help) {
-        encrypt(parser, arguments);
-      } else  
-      if(arguments.decrypt 
-      && !arguments.encrypt 
-      && !arguments.generateKeys 
-      && !arguments.generateHash
-      && !arguments.generateBytes
-      && !arguments.help) {
-        decrypt(parser, arguments);
+      if(HashCommand.NAME.equals(command)) {
+        generateHash(parser, hashCommand);
       } else
-      if(arguments.generateHash 
-      && !arguments.encrypt 
-      && !arguments.decrypt 
-      && !arguments.generateKeys
-      && !arguments.generateBytes
-      && !arguments.help) {
-        generateHash(parser, arguments);
+      if(BytesCommand.NAME.equals(command)) {
+        generateBytes(parser, bytesCommand);
       } else
-      if(arguments.generateBytes
-      && !arguments.encrypt 
-      && !arguments.decrypt 
-      && !arguments.generateKeys
-      && !arguments.generateHash
-      && !arguments.help) {
-        generateBytes(parser, arguments);
+      if(EncryptCommand.NAME.equals(command)) {
+        encrypt(parser, encryptCommand);
+      } else
+      if(DecryptCommand.NAME.equals(command)) {
+        decrypt(parser, decryptCommand);
       } 
       else {
         if(!suppressOutput) parser.usage(); //specifically optionally suppress this output only, just for tests
@@ -106,7 +91,7 @@ public class CryptoCLI {
     }
   }
 
-  private static void generateBytes(JCommander parser, Arguments arguments) throws NoSuchAlgorithmException {
+  private static void generateBytes(JCommander parser, BytesCommand arguments) throws NoSuchAlgorithmException {
     if(arguments.numberOfBytes == null) arguments.numberOfBytes = 16;
     if(arguments.numberOfBytes < 1) error(parser, "Invalid number of bytes");
     byte[] bytes = new byte[arguments.numberOfBytes];
@@ -116,7 +101,7 @@ public class CryptoCLI {
     }
   }
 
-  private static void generateHash(JCommander parser, Arguments arguments) throws IOException {
+  private static void generateHash(JCommander parser, HashCommand arguments) throws IOException {
     if(arguments.input  == null) error(parser, "Must specify the input");
     InputStream is = new BufferedInputStream(new FileInputStream(arguments.input));
     byte[] salt = (null == arguments.salt || arguments.salt.isBlank())
@@ -147,7 +132,7 @@ public class CryptoCLI {
     }
   }
 
-  private static void generateKeys(JCommander parser, Arguments arguments) 
+  private static void generateKeys(JCommander parser, KeysCommand arguments) 
   throws NoSuchAlgorithmException, IOException {
     if(arguments.asymmetric) {
       if(arguments.publicKey == null) {
@@ -161,11 +146,8 @@ public class CryptoCLI {
       Files.write(arguments.privateKey.toPath(), pair.getPrivate().getEncoded(), StandardOpenOption.CREATE);
     }else
     if(arguments.symmetric) {
-      File out = null;
-      if(arguments.output != null) out = arguments.output;
-      if(arguments.key != null) out = arguments.key;
-      if(out == null) {
-        error(parser, "Must specify output file either by key or output parameter");
+      if(arguments.key == null) {
+        error(parser, "Must specify output file for the secret key");
       }
       byte[] key;
       if(arguments.password == null || arguments.password.isBlank()) { 
@@ -179,15 +161,20 @@ public class CryptoCLI {
         } 
         key = KeyService.generateSecretKey(arguments.password, salt).getEncoded();
       }
-      Files.write(out.toPath(), key, StandardOpenOption.CREATE);
+      Files.write(arguments.key.toPath(), key, StandardOpenOption.CREATE);
     } 
     else { 
       error(parser, "Must specify symmetric or asymmetric key generation");
     }
   }
   
-  private static void encrypt(JCommander parser, Arguments arguments) throws IOException {
-    validate(parser, arguments);
+  private static void encrypt(JCommander parser, EncryptCommand arguments) throws IOException {
+    if(arguments.input  == null) error(parser, "Must specify the input");
+    if(arguments.output == null) error(parser, "Must specify the output");
+    if(arguments.key    == null) error(parser, "Must specify the secret key");
+    if(arguments.initializationVector == null || arguments.initializationVector.isBlank()) {
+      error(parser, "Must specify the initialization vector");
+    }
     CryptoParameters params = new CryptoParameters();
     params.input  = new BufferedInputStream(  new FileInputStream(arguments.input)   );
     params.output = new BufferedOutputStream( new FileOutputStream(arguments.output) );
@@ -210,12 +197,18 @@ public class CryptoCLI {
     //if we got here, we have everything we need to do the encryption:
     service.encrypt(params);
     if(arguments.asymmetric) {
+      //also need to write out the generated encrypted secret key
       Files.write(arguments.key.toPath(), params.encryptedKey, StandardOpenOption.CREATE);
     }
   }
 
-  private static void decrypt(JCommander parser, Arguments arguments) throws IOException {
-    validate(parser, arguments);
+  private static void decrypt(JCommander parser, DecryptCommand arguments) throws IOException {
+    if(arguments.input  == null) error(parser, "Must specify the input");
+    if(arguments.output == null) error(parser, "Must specify the output");
+    if(arguments.key    == null) error(parser, "Must specify the secret key");
+    if(arguments.initializationVector == null || arguments.initializationVector.isBlank()) {
+      error(parser, "Must specify the initialization vector");
+    }
     CryptoParameters params = new CryptoParameters();
     params.input  = new BufferedInputStream(  new FileInputStream(arguments.input)   );
     params.output = new BufferedOutputStream( new FileOutputStream(arguments.output) );
@@ -241,15 +234,6 @@ public class CryptoCLI {
     service.decrypt(params);
   }
 
-  private static void validate(JCommander parser, Arguments arguments) {
-    if(arguments.input  == null) error(parser, "Must specify the input");
-    if(arguments.output == null) error(parser, "Must specify the output");
-    if(arguments.key    == null) error(parser, "Must specify the secret key");
-    if(arguments.initializationVector == null || arguments.initializationVector.isBlank()) {
-      error(parser, "Must specify the initialization vector");
-    }
-  }
-  
   private static void error(JCommander parser, String error) throws ParameterException {
     ParameterException ex = new ParameterException(error);
     ex.setJCommander(parser);

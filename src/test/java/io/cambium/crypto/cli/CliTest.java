@@ -17,13 +17,13 @@ public class CliTest {
     CryptoCLI.throwReturnCode = true;
     CryptoCLI.suppressOutput = true;
     
-    CryptoCLI.main("-g", "-s", "-o", "./target/secret.key");
+    CryptoCLI.main("keys", "-sym", "-k", "./target/secret.key");
     
-    CryptoCLI.main("-e", "-s", "-k", "./target/secret.key", 
+    CryptoCLI.main("encrypt", "-sym", "-k", "./target/secret.key", 
         "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71", 
         "-i", "./pom.xml", "-o", "./target/encrypted.bin");
     
-    CryptoCLI.main("-d", "-s", "-k", "./target/secret.key", 
+    CryptoCLI.main("decrypt", "-sym", "-k", "./target/secret.key", 
         "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71", 
         "-i", "./target/encrypted.bin", "-o", "./target/decrypted.xml");
     
@@ -37,13 +37,13 @@ public class CliTest {
     CryptoCLI.throwReturnCode = true;
     CryptoCLI.suppressOutput = true;
     
-    CryptoCLI.main("-g", "-a", "-pub", "./target/public.key", "-priv", "./target/private.key");
+    CryptoCLI.main("keys", "-asym", "-pub", "./target/public.key", "-priv", "./target/private.key");
     
-    CryptoCLI.main("-e", "-a", "-k", "./target/encrypted.key", "-pub", "./target/public.key",   
+    CryptoCLI.main("encrypt", "-asym", "-k", "./target/encrypted.key", "-pub", "./target/public.key",   
         "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71",
         "-i", "./pom.xml", "-o", "./target/encrypted.bin");
     
-    CryptoCLI.main("-d", "-a", "-k", "./target/encrypted.key", "-priv", "./target/private.key", 
+    CryptoCLI.main("decrypt", "-asym", "-k", "./target/encrypted.key", "-priv", "./target/private.key", 
         "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71",
         "-i", "./target/encrypted.bin", "-o", "./target/decrypted.xml");
     
@@ -56,32 +56,32 @@ public class CliTest {
   public void testMD5() throws IOException {
     CryptoCLI.throwReturnCode = true;
     CryptoCLI.suppressOutput = true;
-    CryptoCLI.main("-h", "-md5", "-i", "./pom.xml");
-    CryptoCLI.main("-h", "-md5", "-i", "./pom.xml", "-o", "./target/md5.bin");
+    CryptoCLI.main("hash", "-md5", "-i", "./pom.xml");
+    CryptoCLI.main("hash", "-md5", "-i", "./pom.xml", "-o", "./target/md5.bin");
   }
 
   @Test
   public void testSHA256() throws IOException {
     CryptoCLI.throwReturnCode = true;
     CryptoCLI.suppressOutput = true;
-    CryptoCLI.main("-h", "-sha256", "-i", "./pom.xml");
-    CryptoCLI.main("-h", "-sha256", "--salt", "A1BF39D2FFE6123A90BCD9225F6B2A71", "-i", "./pom.xml");
-    CryptoCLI.main("-h", "-sha256", "--salt", "A1BF39D2FFE6123A90BCD9225F6B2A71", "-i", "./pom.xml", "-o", "./target/sha256.bin");
+    CryptoCLI.main("hash", "-sha256", "-i", "./pom.xml");
+    CryptoCLI.main("hash", "-sha256", "--salt", "A1BF39D2FFE6123A90BCD9225F6B2A71", "-i", "./pom.xml");
+    CryptoCLI.main("hash", "-sha256", "--salt", "A1BF39D2FFE6123A90BCD9225F6B2A71", "-i", "./pom.xml", "-o", "./target/sha256.bin");
   }
   
   @Test
   public void testSHA512() throws IOException {
     CryptoCLI.throwReturnCode = true;
     CryptoCLI.suppressOutput = true;
-    CryptoCLI.main("-h", "-sha512", "-i", "./pom.xml");
+    CryptoCLI.main("hash", "-sha512", "-i", "./pom.xml");
   }
 
   @Test
   public void testBytes() {
     CryptoCLI.throwReturnCode = true;
     CryptoCLI.suppressOutput = true;
-    CryptoCLI.main("-b");
-    CryptoCLI.main("-b", "-n", "64");
+    CryptoCLI.main("bytes");
+    CryptoCLI.main("bytes", "-n", "64");
   }
   
   @Test
@@ -94,6 +94,7 @@ public class CliTest {
     } catch(Exception e) {
       //expected
     }
+    CryptoCLI.main("-?");
     CryptoCLI.main("--help");
   }
   
