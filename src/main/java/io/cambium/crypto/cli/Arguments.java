@@ -86,6 +86,10 @@ public class Arguments {
       description="Hash using SHA-256")
   public boolean sha256 = false;
   
+  @Parameter(names={"-sha512"}, 
+      description="Hash using SHA3-512")
+  public boolean sha512 = false;
+  
   @Parameter(names={"-n", "--byte-count"},
       description="Number of bytes to generate in a bytestring")
   public Integer numberOfBytes = 16;

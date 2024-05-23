@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import io.cambium.crypto.service.impl.Md5HashService;
 import io.cambium.crypto.service.impl.Sha256HashService;
+import io.cambium.crypto.service.impl.Sha512HashService;
 
 class HashServiceTest {
 
@@ -47,4 +48,16 @@ class HashServiceTest {
     assertEquals("0OvAjbe4zln4mIk+/LYfD/ulMKFcxe+WMQsONCHDvKo=", Base64.getEncoder().encodeToString(hash));
   }
 
+  @Test
+  void testSHA512() {
+    byte[] input = "The quick brown fox jumped over the lazy dog.".getBytes(StandardCharsets.UTF_8);
+   
+    HashService service = new Sha512HashService();
+    
+    byte[] hash = service.hash(null, new ByteArrayInputStream(input));
+    assertNotNull(hash);
+    assertTrue(hash.length > 0);
+    assertEquals("mZUO21D8pGbcY0fxAFoaXpHJ4+cDDbiyMujDUzGVBIdKAhYh1fXYe7OgQshmvtY8jZ8O2UKlt8mrQB0sYjxWEw==", Base64.getEncoder().encodeToString(hash));
+  }
+  
 }

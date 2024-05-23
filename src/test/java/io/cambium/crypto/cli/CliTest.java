@@ -68,6 +68,13 @@ public class CliTest {
     CryptoCLI.main("-h", "-sha256", "--salt", "A1BF39D2FFE6123A90BCD9225F6B2A71", "-i", "./pom.xml");
     CryptoCLI.main("-h", "-sha256", "--salt", "A1BF39D2FFE6123A90BCD9225F6B2A71", "-i", "./pom.xml", "-o", "./target/sha256.bin");
   }
+  
+  @Test
+  public void testSHA512() throws IOException {
+    CryptoCLI.throwReturnCode = true;
+    CryptoCLI.suppressOutput = true;
+    CryptoCLI.main("-h", "-sha512", "-i", "./pom.xml");
+  }
 
   @Test
   public void testBytes() {

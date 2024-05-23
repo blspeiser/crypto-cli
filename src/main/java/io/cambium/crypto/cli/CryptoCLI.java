@@ -25,6 +25,7 @@ import io.cambium.crypto.service.HashService;
 import io.cambium.crypto.service.impl.AsymmetricCryptoService;
 import io.cambium.crypto.service.impl.Md5HashService;
 import io.cambium.crypto.service.impl.Sha256HashService;
+import io.cambium.crypto.service.impl.Sha512HashService;
 import io.cambium.crypto.service.impl.SymmetricCryptoService;
 
 //TODO Refactor to use JCommander commands. 
@@ -127,6 +128,9 @@ public class CryptoCLI {
     } else
     if(arguments.sha256) {
       service = new Sha256HashService();
+    } else
+    if(arguments.sha512) {
+      service = new Sha512HashService();
     } 
     else {
       error(parser, "Must specify type of hash");  //no fall-through, this throws an exception
