@@ -20,11 +20,11 @@ public class CliTest {
     CryptoCLI.main("keys", "-sym", "-k", "./target/secret.key");
     
     CryptoCLI.main("encrypt", "-sym", "-k", "./target/secret.key", 
-        "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71", 
+        "-iv", "c6069ad81f8a6b8b281cb5627288c1e2", 
         "-i", "./pom.xml", "-o", "./target/encrypted.bin");
     
     CryptoCLI.main("decrypt", "-sym", "-k", "./target/secret.key", 
-        "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71", 
+        "-iv", "c6069ad81f8a6b8b281cb5627288c1e2", 
         "-i", "./target/encrypted.bin", "-o", "./target/decrypted.xml");
     
     byte[] i = Files.readAllBytes(Paths.get("./pom.xml"));
@@ -40,11 +40,11 @@ public class CliTest {
     CryptoCLI.main("keys", "-asym", "-pub", "./target/public.key", "-priv", "./target/private.key");
     
     CryptoCLI.main("encrypt", "-asym", "-k", "./target/encrypted.key", "-pub", "./target/public.key",   
-        "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71",
+        "-iv", "73167796f05554da6b9d1a39ada99b1f",
         "-i", "./pom.xml", "-o", "./target/encrypted.bin");
     
     CryptoCLI.main("decrypt", "-asym", "-k", "./target/encrypted.key", "-priv", "./target/private.key", 
-        "-iv", "A1BF39D2FFE6123A90BCD9225F6B2A71",
+        "-iv", "73167796f05554da6b9d1a39ada99b1f",
         "-i", "./target/encrypted.bin", "-o", "./target/decrypted.xml");
     
     byte[] i = Files.readAllBytes(Paths.get("./pom.xml"));

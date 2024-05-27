@@ -31,7 +31,7 @@ public class EncryptCommand {
   
   @Parameter(names={"-iv", "--initialization-vector"},
       description="16-byte Initialization vector, represented as a 32-character hex string;"
-          + " example: A1BF39D2FFE6123A90BCD9225F6B2A71")
+          + " example: c6069ad81f8a6b8b281cb5627288c1e2 ")
   public String initializationVector = null;
   
   @Parameter(names={"-i", "--input-file"}, 
