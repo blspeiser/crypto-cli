@@ -43,4 +43,8 @@ public class EncryptCommand {
       description="File to store the encrypted output",
       converter=FileConverter.class)
   public File output = null;
+  
+  @Parameter(names={"-in", "--stdin"}, 
+      description="Read standard input instead of using an input file")
+  public boolean stdin = false;
 }

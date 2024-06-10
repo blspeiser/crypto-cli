@@ -85,6 +85,13 @@ public class CliTest {
   }
   
   @Test
+  public void testUuid() {
+    CryptoCLI.throwReturnCode = true;
+    CryptoCLI.suppressOutput = true;
+    CryptoCLI.main("uuid");
+  }
+  
+  @Test
   public void testHelp() throws IOException {
     CryptoCLI.throwReturnCode = true;
     CryptoCLI.suppressOutput = true;

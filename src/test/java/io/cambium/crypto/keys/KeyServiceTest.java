@@ -1,12 +1,14 @@
 package io.cambium.crypto.keys;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.KeyPair;
+import java.util.Arrays;
 
 import javax.crypto.SecretKey;
 
@@ -23,8 +25,14 @@ public class KeyServiceTest {
   
   @Test
   public void testPasswordBasedKeyGeneration() {
-    SecretKey key = KeyService.generateSecretKey("iL0ve@vocado$", "dslj~khg6~43lk~ksdf~asdD");
-    assertNotNull(key);
+    String password = "iL0ve@vocado$";
+    String salt = "dslj~khg6~43lk~ksdf~asdD";
+    //verify it is deterministic!
+    SecretKey key1 = KeyService.generateSecretKey(password, salt);
+    SecretKey key2 = KeyService.generateSecretKey(password, salt);
+    assertNotNull(key1);
+    assertNotNull(key2);
+    assertTrue(Arrays.equals(key1.getEncoded(), key2.getEncoded()));
   }
   
 }

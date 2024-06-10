@@ -13,6 +13,7 @@ import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.HexFormat;
+import java.util.UUID;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -39,6 +40,7 @@ public class CryptoCLI {
       Arguments arguments = new Arguments();
       KeysCommand keysCommand = new KeysCommand();
       HashCommand hashCommand = new HashCommand();
+      UuidCommand uuidCommand = new UuidCommand();
       BytesCommand bytesCommand = new BytesCommand();
       EncryptCommand encryptCommand = new EncryptCommand();
       DecryptCommand decryptCommand = new DecryptCommand();
@@ -47,6 +49,7 @@ public class CryptoCLI {
           .addObject(arguments)
           .addCommand(keysCommand)
           .addCommand(hashCommand)
+          .addCommand(uuidCommand)
           .addCommand(bytesCommand)
           .addCommand(encryptCommand)
           .addCommand(decryptCommand)
@@ -59,6 +62,9 @@ public class CryptoCLI {
       } else
       if(HashCommand.NAME.equals(command)) {
         generateHash(parser, hashCommand);
+      } else
+      if(UuidCommand.NAME.equals(command)) {
+        generateUuid(parser, uuidCommand);
       } else
       if(BytesCommand.NAME.equals(command)) {
         generateBytes(parser, bytesCommand);
@@ -101,9 +107,18 @@ public class CryptoCLI {
     }
   }
 
+  private static void generateUuid(JCommander parser, UuidCommand arguments) throws IOException {
+    UUID uuid = UUID.randomUUID();
+    if(!suppressOutput) {
+      System.out.println(uuid.toString());
+    }
+  }
+  
   private static void generateHash(JCommander parser, HashCommand arguments) throws IOException {
-    if(arguments.input  == null) error(parser, "Must specify the input");
-    InputStream is = new BufferedInputStream(new FileInputStream(arguments.input));
+    if(arguments.input == null && !arguments.stdin) error(parser, "Must specify the input");
+    InputStream is = new BufferedInputStream(arguments.stdin
+        ? System.in
+        : new FileInputStream(arguments.input));
     byte[] salt = (null == arguments.salt || arguments.salt.isBlank())
         ? null
         : arguments.salt.getBytes(StandardCharsets.UTF_8);
@@ -169,15 +184,17 @@ public class CryptoCLI {
   }
   
   private static void encrypt(JCommander parser, EncryptCommand arguments) throws IOException {
-    if(arguments.input  == null) error(parser, "Must specify the input");
+    if(arguments.input  == null && !arguments.stdin) error(parser, "Must specify the input");
     if(arguments.output == null) error(parser, "Must specify the output");
     if(arguments.key    == null) error(parser, "Must specify the secret key");
     if(arguments.initializationVector == null || arguments.initializationVector.isBlank()) {
       error(parser, "Must specify the initialization vector");
     }
     CryptoParameters params = new CryptoParameters();
-    params.input  = new BufferedInputStream(  new FileInputStream(arguments.input)   );
-    params.output = new BufferedOutputStream( new FileOutputStream(arguments.output) );
+    params.input  = new BufferedInputStream(arguments.stdin
+        ? System.in
+        : new FileInputStream(arguments.input));
+    params.output = new BufferedOutputStream(new FileOutputStream(arguments.output));
     params.initializationVector = HexFormat.of().parseHex(
         arguments.initializationVector.toLowerCase());
     CryptoService service = null;
@@ -203,15 +220,17 @@ public class CryptoCLI {
   }
 
   private static void decrypt(JCommander parser, DecryptCommand arguments) throws IOException {
-    if(arguments.input  == null) error(parser, "Must specify the input");
+    if(arguments.input  == null && !arguments.stdin) error(parser, "Must specify the input");
     if(arguments.output == null) error(parser, "Must specify the output");
     if(arguments.key    == null) error(parser, "Must specify the secret key");
     if(arguments.initializationVector == null || arguments.initializationVector.isBlank()) {
       error(parser, "Must specify the initialization vector");
     }
     CryptoParameters params = new CryptoParameters();
-    params.input  = new BufferedInputStream(  new FileInputStream(arguments.input)   );
-    params.output = new BufferedOutputStream( new FileOutputStream(arguments.output) );
+    params.input  = new BufferedInputStream(arguments.stdin
+        ? System.in
+        : new FileInputStream(arguments.input));
+    params.output = new BufferedOutputStream(new FileOutputStream(arguments.output));
     params.initializationVector = HexFormat.of().withUpperCase().parseHex(
         arguments.initializationVector.toUpperCase());
     CryptoService service = null;
