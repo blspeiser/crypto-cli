@@ -2,6 +2,8 @@ Command-line tool for performing common cryptographic tasks, like generating key
 
 It is well-suited for use in CI/CD scripts or as a basic command line tool.  It packages all of its relevant dependencies as a single jar, and is provided with shell scripts for both Linux and Windows. 
 
+Download the code, run `mvn clean package`, and it will create `target/crypto-cli.jar` and `target/crypto.zip`.  You can use the jar directly; the zip file contains the jar file alongside the shell scripts if that's easier for you. 
+
 ```
 Usage: crypto-cli [options] [command] [command options]
   Options:
@@ -55,12 +57,15 @@ Usage: crypto-cli [options] [command] [command options]
     uuid      Generate universally unique IDs (UUIDs)
       Usage: uuid
 
-    bytes      Generate random byte strings for cryptographic inputs
+    bytes      Generate byte strings for cryptographic inputs
       Usage: bytes [options]
         Options:
           -n, --length
-            Number of bytes to generate in a byte string (16 if not specified)
+            Number of bytes to generate in a random byte string (16 if not 
+            specified) 
             Default: 16
+          -t, --text
+            Text to be rendered as a hexadecimal byte string
 
     encrypt      Encrypt a file
       Usage: encrypt [options]
