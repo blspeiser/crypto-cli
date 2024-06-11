@@ -85,6 +85,13 @@ public class CliTest {
   }
   
   @Test
+  public void testText() {
+    CryptoCLI.throwReturnCode = true;
+    CryptoCLI.suppressOutput = true;
+    CryptoCLI.main("bytes", "--text", "Hello World!");
+  }
+  
+  @Test
   public void testUuid() {
     CryptoCLI.throwReturnCode = true;
     CryptoCLI.suppressOutput = true;

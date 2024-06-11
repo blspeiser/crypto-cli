@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.Strings;
 
 import io.cambium.crypto.keys.KeyService;
 import io.cambium.crypto.service.CryptoParameters;
@@ -28,7 +29,6 @@ import io.cambium.crypto.service.impl.Sha256HashService;
 import io.cambium.crypto.service.impl.Sha512HashService;
 import io.cambium.crypto.service.impl.SymmetricCryptoService;
 
-//TODO Refactor to use JCommander commands. 
 public class CryptoCLI {
   //These two flags are to make it easier to properly run tests. 
   public static boolean throwReturnCode = false;
@@ -98,12 +98,19 @@ public class CryptoCLI {
   }
 
   private static void generateBytes(JCommander parser, BytesCommand arguments) throws NoSuchAlgorithmException {
-    if(arguments.numberOfBytes == null) arguments.numberOfBytes = 16;
-    if(arguments.numberOfBytes < 1) error(parser, "Invalid number of bytes");
-    byte[] bytes = new byte[arguments.numberOfBytes];
-    SecureRandom.getInstanceStrong().nextBytes(bytes);
-    if(!suppressOutput) {
-      System.out.println(HexFormat.of().formatHex(bytes));
+    if(Strings.isStringEmpty(arguments.text)) {
+      if(arguments.numberOfBytes == null) arguments.numberOfBytes = 16;
+      if(arguments.numberOfBytes < 1) error(parser, "Invalid number of bytes");
+      byte[] bytes = new byte[arguments.numberOfBytes];
+      SecureRandom.getInstanceStrong().nextBytes(bytes);
+      if(!suppressOutput) {
+        System.out.println(HexFormat.of().formatHex(bytes));
+      }
+    } else {
+      byte[] bytes = arguments.text.getBytes();
+      if(!suppressOutput) {
+        System.out.println(HexFormat.of().formatHex(bytes));
+      }
     }
   }
 

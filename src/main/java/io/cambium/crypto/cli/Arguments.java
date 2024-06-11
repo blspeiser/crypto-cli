@@ -8,5 +8,4 @@ public class Arguments {
       description="Display system usage")
   public boolean help = false;
   
-  
 }
