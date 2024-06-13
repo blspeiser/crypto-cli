@@ -1,8 +1,12 @@
+#crypto-cli
+
 Command-line tool for performing common cryptographic tasks, like generating keys, hashing, encryption, decryption, and producing UUIDs. It was designed primarily to be specifically lightweight with minimal dependencies, and to only rely on the JCA implementations for encryption. 
 
 It is well-suited for use in CI/CD scripts or as a basic command line tool.  It packages all of its relevant dependencies as a single jar, and is provided with shell scripts for both Linux and Windows. 
 
 Download the code, run `mvn clean package`, and it will create `target/crypto-cli.jar` and `target/crypto.zip`.  You can use the jar directly; the zip file contains the jar file alongside the shell scripts if that's easier for you. 
+
+Although this Maven build is set to use Java 21, it can likely be compiled easily on previous versions of Java - just edit `pom.xml` accordingly. 
 
 ```
 Usage: crypto-cli [options] [command] [command options]
@@ -44,6 +48,8 @@ Usage: crypto-cli [options] [command] [command options]
           -in, --stdin
             Read standard input instead of using an input file
             Default: false
+          -t, --text
+            Text to be hashed instead of using an input file
           -md5
             Hash using MD5
             Default: false
