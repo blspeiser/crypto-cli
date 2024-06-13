@@ -1,4 +1,4 @@
-#crypto-cli
+# crypto-cli
 
 Command-line tool for performing common cryptographic tasks, like generating keys, hashing, encryption, decryption, and producing UUIDs. It was designed primarily to be specifically lightweight with minimal dependencies, and to only rely on the JCA implementations for encryption. 
 
