@@ -39,4 +39,7 @@ public class HashCommand {
   @Parameter(names={"-in", "--stdin"}, 
       description="Read standard input instead of using an input file")
   public boolean stdin = false;
+  
+  @Parameter(names={"-t", "--text"}, description="Text to be hashed instead of using an input file")
+  public String text = null;
 }

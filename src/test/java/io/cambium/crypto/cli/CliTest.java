@@ -58,6 +58,7 @@ public class CliTest {
     CryptoCLI.suppressOutput = true;
     CryptoCLI.main("hash", "-md5", "-i", "./pom.xml");
     CryptoCLI.main("hash", "-md5", "-i", "./pom.xml", "-o", "./target/md5.bin");
+    CryptoCLI.main("hash", "-md5", "-t", "Hello World!");
   }
 
   @Test

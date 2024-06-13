@@ -2,6 +2,7 @@ package io.cambium.crypto.cli;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -122,11 +123,18 @@ public class CryptoCLI {
   }
   
   private static void generateHash(JCommander parser, HashCommand arguments) throws IOException {
-    if(arguments.input == null && !arguments.stdin) error(parser, "Must specify the input");
-    InputStream is = new BufferedInputStream(arguments.stdin
-        ? System.in
-        : new FileInputStream(arguments.input));
-    byte[] salt = (null == arguments.salt || arguments.salt.isBlank())
+    InputStream is = null;
+    if(arguments.input != null) {
+      is = new BufferedInputStream(new FileInputStream(arguments.input));
+    } else 
+    if(!Strings.isStringEmpty(arguments.text)) {
+      is = new ByteArrayInputStream(arguments.text.getBytes());
+    } else 
+    if(arguments.stdin) {
+      is = new BufferedInputStream(System.in);
+    }
+    if(null == is) error(parser, "Must specify the input");
+    byte[] salt = Strings.isStringEmpty(arguments.salt)
         ? null
         : arguments.salt.getBytes(StandardCharsets.UTF_8);
     HashService service = null;
