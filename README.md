@@ -53,6 +53,9 @@ Usage: crypto-cli [options] [command] [command options]
           -md5
             Hash using MD5
             Default: false
+          -sha1
+            Hash using SHA-1
+            Default: false
           -sha256
             Hash using SHA-256
             Default: false

@@ -62,6 +62,13 @@ public class CliTest {
   }
 
   @Test
+  public void testSHA1() throws IOException {
+    CryptoCLI.throwReturnCode = true;
+    CryptoCLI.suppressOutput = true;
+    CryptoCLI.main("hash", "-sha1", "-i", "./pom.xml");
+  }
+  
+  @Test
   public void testSHA256() throws IOException {
     CryptoCLI.throwReturnCode = true;
     CryptoCLI.suppressOutput = true;

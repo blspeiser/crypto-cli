@@ -11,6 +11,7 @@ import java.util.Base64;
 import org.junit.jupiter.api.Test;
 
 import io.cambium.crypto.service.impl.Md5HashService;
+import io.cambium.crypto.service.impl.Sha1HashService;
 import io.cambium.crypto.service.impl.Sha256HashService;
 import io.cambium.crypto.service.impl.Sha512HashService;
 
@@ -26,6 +27,17 @@ class HashServiceTest {
     assertEquals("XG/73UDZVWtzoh5jw+DpBA==", Base64.getEncoder().encodeToString(hash));
   }
   
+  @Test
+  void testSHA1() {
+    byte[] input = "The quick brown fox jumped over the lazy dog.".getBytes(StandardCharsets.UTF_8);
+    HashService service = new Sha1HashService();
+    
+    byte[] hash = service.hash(null, new ByteArrayInputStream(input));
+    assertNotNull(hash);
+    assertTrue(hash.length > 0);
+    assertEquals("wIVPufsDxBzOOALLDSIFKebu+U4=", Base64.getEncoder().encodeToString(hash));
+  }
+
   @Test
   void testSHA256() {
     byte[] input = "The quick brown fox jumped over the lazy dog.".getBytes(StandardCharsets.UTF_8);

@@ -14,6 +14,10 @@ public class HashCommand {
       description="Hash using MD5")
   public boolean md5 = false;
   
+  @Parameter(names={"-sha1"}, 
+      description="Hash using SHA-1")
+  public boolean sha1 = false;
+  
   @Parameter(names={"-sha256"}, 
       description="Hash using SHA-256")
   public boolean sha256 = false;

@@ -26,6 +26,7 @@ import io.cambium.crypto.service.CryptoService;
 import io.cambium.crypto.service.HashService;
 import io.cambium.crypto.service.impl.AsymmetricCryptoService;
 import io.cambium.crypto.service.impl.Md5HashService;
+import io.cambium.crypto.service.impl.Sha1HashService;
 import io.cambium.crypto.service.impl.Sha256HashService;
 import io.cambium.crypto.service.impl.Sha512HashService;
 import io.cambium.crypto.service.impl.SymmetricCryptoService;
@@ -140,6 +141,9 @@ public class CryptoCLI {
     HashService service = null;
     if(arguments.md5) { 
       service = new Md5HashService();
+    } else
+    if(arguments.sha1) { 
+      service = new Sha1HashService();
     } else
     if(arguments.sha256) {
       service = new Sha256HashService();
