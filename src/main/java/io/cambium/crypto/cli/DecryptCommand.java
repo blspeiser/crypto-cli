@@ -17,6 +17,10 @@ public class DecryptCommand {
   @Parameter(names={"-asym", "--asymmetric"}, 
       description="Use asymmetric decryption with a private key")
   public boolean asymmetric = false;
+  
+  @Parameter(names={"-hyb", "--hybrid"}, 
+      description="Use hybrid symmetric+asymmetric decryption with a private key")
+  public boolean hybrid = false;
     
   @Parameter(names={"-k", "--key"}, 
       description="Specify the key (or encrypted key) for decryption",

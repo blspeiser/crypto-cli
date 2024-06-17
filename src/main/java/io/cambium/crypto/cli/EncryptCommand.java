@@ -13,14 +13,18 @@ public class EncryptCommand {
   @Parameter(names={"-sym", "--symmetric"}, 
       description="Use symmetric encryption with a single secret key")
   public boolean symmetric = false;
-  
+
   @Parameter(names={"-asym", "--asymmetric"}, 
       description="Use asymmetric encryption with a public key")
   public boolean asymmetric = false;
+  
+  @Parameter(names={"-hyb", "--hybrid"}, 
+      description="Use hybrid symmetric+asymmetric encryption with a public key")
+  public boolean hybrid = false;
     
   @Parameter(names={"-k", "--key"}, 
       description="Specify the key for symmetric encryption, "
-          + "or where to create the encrypted secret key for asymmetric encryption",
+          + "or where to create the encrypted secret key for hybrid encryption",
       converter=FileConverter.class)
   public File key = null;
   

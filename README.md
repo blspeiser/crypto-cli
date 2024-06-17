@@ -82,6 +82,9 @@ Usage: crypto-cli [options] [command] [command options]
           -asym, --asymmetric
             Use asymmetric encryption with a public key
             Default: false
+          -hyb, --hybrid
+            Use hybrid symmetric+asymmetric encryption with a public key
+            Default: false
           -iv, --initialization-vector
             16-byte Initialization vector, represented as a 32-character hex 
             string; example: c6069ad81f8a6b8b281cb5627288c1e2
@@ -89,7 +92,7 @@ Usage: crypto-cli [options] [command] [command options]
             File to be encrypted
           -k, --key
             Specify the key for symmetric encryption, or where to create the 
-            encrypted secret key for asymmetric encryption
+            encrypted secret key for hybrid encryption
           -o, --output-file
             File to store the encrypted output
           -pub, --public-key
@@ -106,6 +109,9 @@ Usage: crypto-cli [options] [command] [command options]
         Options:
           -asym, --asymmetric
             Use asymmetric decryption with a private key
+            Default: false
+          -hyb, --hybrid
+            Use hybrid symmetric+asymmetric decryption with a private key
             Default: false
           -iv, --initialization-vector
             16-byte Initialization vector, represented as a 32-character hex 

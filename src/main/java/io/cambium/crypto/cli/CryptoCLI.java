@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
@@ -25,6 +26,7 @@ import io.cambium.crypto.service.CryptoParameters;
 import io.cambium.crypto.service.CryptoService;
 import io.cambium.crypto.service.HashService;
 import io.cambium.crypto.service.impl.AsymmetricCryptoService;
+import io.cambium.crypto.service.impl.HybridCryptoService;
 import io.cambium.crypto.service.impl.Md5HashService;
 import io.cambium.crypto.service.impl.Sha1HashService;
 import io.cambium.crypto.service.impl.Sha256HashService;
@@ -35,6 +37,12 @@ public class CryptoCLI {
   //These two flags are to make it easier to properly run tests. 
   public static boolean throwReturnCode = false;
   public static boolean suppressOutput = false;
+  
+  private static final OpenOption[] WRITE_OPTIONS = {
+      StandardOpenOption.CREATE,
+      StandardOpenOption.TRUNCATE_EXISTING, 
+      StandardOpenOption.WRITE
+  };
 
   public static void main(String... args) {
     int returnCode = 0; 
@@ -162,7 +170,7 @@ public class CryptoCLI {
         System.out.println(hex);
       }
     } else {
-      Files.write(arguments.output.toPath(), hash, StandardOpenOption.CREATE);
+      Files.write(arguments.output.toPath(), hash, WRITE_OPTIONS);
     }
   }
 
@@ -176,8 +184,8 @@ public class CryptoCLI {
         error(parser, "Must specify the output file for the private key");
       }
       KeyPair pair = KeyService.generateKeyPair();
-      Files.write(arguments.publicKey.toPath(),  pair.getPublic().getEncoded(),  StandardOpenOption.CREATE);
-      Files.write(arguments.privateKey.toPath(), pair.getPrivate().getEncoded(), StandardOpenOption.CREATE);
+      Files.write(arguments.publicKey.toPath(),  pair.getPublic().getEncoded(),  WRITE_OPTIONS);
+      Files.write(arguments.privateKey.toPath(), pair.getPrivate().getEncoded(), WRITE_OPTIONS);
     }else
     if(arguments.symmetric) {
       if(arguments.key == null) {
@@ -195,7 +203,7 @@ public class CryptoCLI {
         } 
         key = KeyService.generateSecretKey(arguments.password, salt).getEncoded();
       }
-      Files.write(arguments.key.toPath(), key, StandardOpenOption.CREATE);
+      Files.write(arguments.key.toPath(), key, WRITE_OPTIONS);
     } 
     else { 
       error(parser, "Must specify symmetric or asymmetric key generation");
@@ -203,10 +211,10 @@ public class CryptoCLI {
   }
   
   private static void encrypt(JCommander parser, EncryptCommand arguments) throws IOException {
+    if(arguments.key    == null && !arguments.asymmetric) error(parser, "Must specify the secret key");
     if(arguments.input  == null && !arguments.stdin) error(parser, "Must specify the input");
     if(arguments.output == null) error(parser, "Must specify the output");
-    if(arguments.key    == null) error(parser, "Must specify the secret key");
-    if(arguments.initializationVector == null || arguments.initializationVector.isBlank()) {
+    if(Strings.isStringEmpty(arguments.initializationVector) && !arguments.asymmetric) {
       error(parser, "Must specify the initialization vector");
     }
     CryptoParameters params = new CryptoParameters();
@@ -214,35 +222,42 @@ public class CryptoCLI {
         ? System.in
         : new FileInputStream(arguments.input));
     params.output = new BufferedOutputStream(new FileOutputStream(arguments.output));
-    params.initializationVector = HexFormat.of().parseHex(
-        arguments.initializationVector.toLowerCase());
+    if(!arguments.asymmetric) {
+      params.initializationVector = HexFormat.of().parseHex(
+          arguments.initializationVector.toLowerCase());
+    }
     CryptoService service = null;
     if(arguments.symmetric) {
       params.secretKey = Files.readAllBytes(arguments.key.toPath());
       if(params.secretKey.length == 0) throw new IllegalArgumentException("Secret key is empty");
       service = new SymmetricCryptoService();
-    } else 
+    } else
     if(arguments.asymmetric) {
       params.publicKey = Files.readAllBytes(arguments.publicKey.toPath());
       if(params.publicKey.length == 0) throw new IllegalArgumentException("Public key is empty");
       service = new AsymmetricCryptoService();
+    } else      
+    if(arguments.hybrid) {
+      params.publicKey = Files.readAllBytes(arguments.publicKey.toPath());
+      if(params.publicKey.length == 0) throw new IllegalArgumentException("Public key is empty");
+      service = new HybridCryptoService();
     } 
     else { 
-      error(parser, "Must specify symmetric or asymmetric encryption");
+      error(parser, "Must specify symmetric, asymmetric, or hybrid encryption");
     }
     //if we got here, we have everything we need to do the encryption:
     service.encrypt(params);
-    if(arguments.asymmetric) {
+    if(arguments.hybrid) {
       //also need to write out the generated encrypted secret key
-      Files.write(arguments.key.toPath(), params.encryptedKey, StandardOpenOption.CREATE);
+      Files.write(arguments.key.toPath(), params.encryptedKey, WRITE_OPTIONS);
     }
   }
 
   private static void decrypt(JCommander parser, DecryptCommand arguments) throws IOException {
+    if(arguments.key    == null && !arguments.asymmetric) error(parser, "Must specify the secret key");
     if(arguments.input  == null && !arguments.stdin) error(parser, "Must specify the input");
     if(arguments.output == null) error(parser, "Must specify the output");
-    if(arguments.key    == null) error(parser, "Must specify the secret key");
-    if(arguments.initializationVector == null || arguments.initializationVector.isBlank()) {
+    if(Strings.isStringEmpty(arguments.initializationVector) && !arguments.asymmetric) {
       error(parser, "Must specify the initialization vector");
     }
     CryptoParameters params = new CryptoParameters();
@@ -250,8 +265,10 @@ public class CryptoCLI {
         ? System.in
         : new FileInputStream(arguments.input));
     params.output = new BufferedOutputStream(new FileOutputStream(arguments.output));
-    params.initializationVector = HexFormat.of().withUpperCase().parseHex(
-        arguments.initializationVector.toUpperCase());
+    if(!arguments.asymmetric) {
+      params.initializationVector = HexFormat.of().withUpperCase().parseHex(
+          arguments.initializationVector.toUpperCase());
+    }
     CryptoService service = null;
     if(arguments.symmetric) {
       params.secretKey = Files.readAllBytes(arguments.key.toPath());
@@ -259,14 +276,19 @@ public class CryptoCLI {
       service = new SymmetricCryptoService();
     } else 
     if(arguments.asymmetric) {
+      params.privateKey = Files.readAllBytes(arguments.privateKey.toPath());
+      if(params.privateKey.length == 0) throw new IllegalArgumentException("Private key is empty");
+      service = new AsymmetricCryptoService();
+    } else
+    if(arguments.hybrid) {
       params.encryptedKey = Files.readAllBytes(arguments.key.toPath());
       if(params.encryptedKey.length == 0) throw new IllegalArgumentException("Encrypted key is empty");
       params.privateKey = Files.readAllBytes(arguments.privateKey.toPath());
       if(params.privateKey.length == 0) throw new IllegalArgumentException("Private key is empty");
-      service = new AsymmetricCryptoService();
+      service = new HybridCryptoService();
     }
     else { 
-      error(parser, "Must specify symmetric or asymmetric decryption");
+      error(parser, "Must specify symmetric, asymmetric, or hybrid decryption");
     }
     //if we got here, we have everything we need to do the decryption:
     service.decrypt(params);
