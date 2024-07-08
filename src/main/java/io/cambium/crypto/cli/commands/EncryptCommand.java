@@ -1,4 +1,4 @@
-package io.cambium.crypto.cli;
+package io.cambium.crypto.cli.commands;
 
 import java.io.File;
 
@@ -6,7 +6,11 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
 
-@Parameters(commandNames={EncryptCommand.NAME}, commandDescription="Encrypt a file")
+import io.cambium.crypto.cli.validators.EncryptCommandValidator;
+
+@Parameters(commandNames={EncryptCommand.NAME}, 
+            commandDescription="Encrypt a file",
+            parametersValidators={EncryptCommandValidator.class})
 public class EncryptCommand {
   public static final String NAME = "encrypt";
   

@@ -1,4 +1,4 @@
-package io.cambium.crypto.cli;
+package io.cambium.crypto.cli.commands;
 
 import java.io.File;
 
@@ -6,7 +6,11 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
 
-@Parameters(commandNames={DecryptCommand.NAME}, commandDescription="Decrypt a file")
+import io.cambium.crypto.cli.validators.DecryptCommandValidator;
+
+@Parameters(commandNames={DecryptCommand.NAME}, 
+            commandDescription="Decrypt a file",
+            parametersValidators={DecryptCommandValidator.class})
 public class DecryptCommand {
   public static final String NAME = "decrypt";
   

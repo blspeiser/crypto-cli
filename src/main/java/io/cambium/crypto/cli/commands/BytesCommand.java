@@ -1,9 +1,13 @@
-package io.cambium.crypto.cli;
+package io.cambium.crypto.cli.commands;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-@Parameters(commandNames={BytesCommand.NAME}, commandDescription="Generate byte strings for cryptographic inputs")
+import io.cambium.crypto.cli.validators.BytesCommandValidator;
+
+@Parameters(commandNames={BytesCommand.NAME}, 
+            commandDescription="Generate byte strings for cryptographic inputs",
+            parametersValidators={BytesCommandValidator.class})
 public class BytesCommand {
   public static final String NAME = "bytes";
 

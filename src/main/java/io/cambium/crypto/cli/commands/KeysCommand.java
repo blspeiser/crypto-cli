@@ -1,4 +1,4 @@
-package io.cambium.crypto.cli;
+package io.cambium.crypto.cli.commands;
 
 import java.io.File;
 
@@ -6,7 +6,12 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.beust.jcommander.converters.FileConverter;
 
-@Parameters(commandNames={KeysCommand.NAME}, commandDescription="Generate cryptographic keys or key pairs")
+import io.cambium.crypto.cli.validators.KeysCommandValidator;
+
+@Parameters(
+    commandNames={KeysCommand.NAME}, 
+    commandDescription="Generate cryptographic keys or key pairs",
+    parametersValidators={KeysCommandValidator.class})
 public class KeysCommand {
   public static final String NAME = "keys";
   

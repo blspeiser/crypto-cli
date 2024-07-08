@@ -37,7 +37,7 @@ class HashServiceTest {
     assertTrue(hash.length > 0);
     assertEquals("wIVPufsDxBzOOALLDSIFKebu+U4=", Base64.getEncoder().encodeToString(hash));
   }
-
+  
   @Test
   void testSHA256() {
     byte[] input = "The quick brown fox jumped over the lazy dog.".getBytes(StandardCharsets.UTF_8);
