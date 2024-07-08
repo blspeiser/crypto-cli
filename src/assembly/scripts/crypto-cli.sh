@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar crypto-cli.jar $*
+java -jar crypto-cli.jar "$@"
