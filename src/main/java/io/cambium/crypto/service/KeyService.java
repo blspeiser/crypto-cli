@@ -1,4 +1,4 @@
-package io.cambium.crypto.keys;
+package io.cambium.crypto.service;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;

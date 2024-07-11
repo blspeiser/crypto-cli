@@ -1,4 +1,4 @@
-package io.cambium.crypto.keys;
+package io.cambium.crypto.service;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -8,7 +8,7 @@ import java.security.SecureRandom;
 import java.util.HexFormat;
 
 import io.cambium.crypto.cli.commands.KeysCommand;
-import io.cambium.crypto.keys.KeyService;
+import io.cambium.crypto.service.KeyService;
 
 public class KeysCommandExecutor extends BaseCommandExecutor<KeysCommand> {
   

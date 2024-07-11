@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HexFormat;
 
-
 import io.cambium.crypto.cli.commands.EncryptCommand;
 import io.cambium.crypto.service.CryptoParameters;
 import io.cambium.crypto.service.CryptoService;

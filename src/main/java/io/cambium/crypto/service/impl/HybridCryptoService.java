@@ -3,9 +3,9 @@ package io.cambium.crypto.service.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import io.cambium.crypto.keys.KeyService;
 import io.cambium.crypto.service.CryptoParameters;
 import io.cambium.crypto.service.CryptoService;
+import io.cambium.crypto.service.KeyService;
 
 public class HybridCryptoService implements CryptoService {
   private CryptoService symmetricDelegate = new SymmetricCryptoService();

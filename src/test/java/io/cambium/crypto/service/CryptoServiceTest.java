@@ -16,7 +16,6 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import io.cambium.crypto.keys.KeyService;
 import io.cambium.crypto.service.impl.AsymmetricCryptoService;
 import io.cambium.crypto.service.impl.HybridCryptoService;
 import io.cambium.crypto.service.impl.SymmetricCryptoService;

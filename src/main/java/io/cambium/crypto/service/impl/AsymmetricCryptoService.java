@@ -12,9 +12,9 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import io.cambium.crypto.keys.KeyService;
 import io.cambium.crypto.service.CryptoParameters;
 import io.cambium.crypto.service.CryptoService;
+import io.cambium.crypto.service.KeyService;
 
 public class AsymmetricCryptoService implements CryptoService {
   private static final String CIPHER_ALGORITHM = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";

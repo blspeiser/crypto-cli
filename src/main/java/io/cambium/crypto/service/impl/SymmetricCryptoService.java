@@ -13,9 +13,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-import io.cambium.crypto.keys.KeyService;
 import io.cambium.crypto.service.CryptoParameters;
 import io.cambium.crypto.service.CryptoService;
+import io.cambium.crypto.service.KeyService;
 
 public class SymmetricCryptoService implements CryptoService {
   private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
