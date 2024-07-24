@@ -68,10 +68,7 @@ public class CryptoCLI {
         if(!arguments.quiet) parser.usage(); 
         returnCode = arguments.help ? 0 : 1; //if the user specifically asked for help, then this case is not an error
       }
-    } catch(ParameterException e) {
-      System.err.println(e.getMessage());
-      returnCode = 1;
-    } catch(IllegalArgumentException | UnsupportedOperationException e) {
+    } catch(ParameterException | IllegalArgumentException | UnsupportedOperationException e) {
       System.err.println(e.getMessage());
       returnCode = 1;
     } catch(Exception e) {
